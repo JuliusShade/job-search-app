@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { fetchJobDetails, fetchJobPostings } from "../api/indeedApi";
 import { cleanHTML } from "../utils/cleanHTML";
 import "./JobList.css";
+import Loading from "./Loading"; // Import Loading component
 
 const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
   const [jobs, setJobs] = useState(initialJobs);
@@ -9,9 +10,9 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
   const [jobDetails, setJobDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingDetails, setLoadingDetails] = useState({});
   const [nextPageId, setNextPageId] = useState(null);
 
-  // Count job postings by employer
   const countJobPostingsByEmployer = (jobs) => {
     const counts = {};
     jobs.forEach((job) => {
@@ -22,7 +23,6 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
 
   const jobCounts = countJobPostingsByEmployer(jobs);
 
-  // Sort jobs by employer count
   const sortJobsByEmployerCount = (jobs, counts) => {
     return jobs.sort((a, b) => counts[b.company_name] - counts[a.company_name]);
   };
@@ -35,7 +35,8 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
       return;
     }
 
-    setLoading(true);
+    setLoadingDetails((prevLoading) => ({ ...prevLoading, [jobId]: true }));
+
     setSelectedJob(jobId);
 
     if (!jobDetails[jobId]) {
@@ -51,7 +52,11 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
     }
 
     setShowDetails(true);
-    setLoading(false);
+    setLoadingDetails((prevLoading) => ({ ...prevLoading, [jobId]: false }));
+  };
+
+  const handleHideDetails = () => {
+    setShowDetails(false);
   };
 
   useEffect(() => {
@@ -77,13 +82,17 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
 
     setLoading(true);
     try {
-      const response = await fetchJobPostings({ page: nextPageId, useMock });
+      const response = await fetchJobPostings({
+        page: nextPageId,
+        ...searchParams,
+        useMock,
+      });
       setJobs((prevJobs) => {
         const updatedJobs = [...prevJobs, ...response.hits];
         const updatedJobCounts = countJobPostingsByEmployer(updatedJobs);
         return sortJobsByEmployerCount(updatedJobs, updatedJobCounts);
       });
-      setNextPageId(response.next_page_id); // Update nextPageId for subsequent calls
+      setNextPageId(response.next_page_id);
     } catch (error) {
       console.error("Error loading more jobs:", error);
     }
@@ -104,37 +113,39 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
               Number of Job Postings by this employer:{" "}
               {jobCounts[job.company_name]}
             </span>
-            <button onClick={() => handleViewDetails(job.id)}>View Job</button>
-            {selectedJob === job.id && showDetails && (
-              <div className="job-details">
-                {loading ? (
-                  <p>Loading...</p>
-                ) : (
-                  <>
-                    <h4>Job Details</h4>
+            <button onClick={() => handleViewDetails(job.id)}>
+              {loadingDetails[job.id] ? <Loading /> : "View Job"}
+            </button>
+            <div
+              className={`job-details ${
+                selectedJob === job.id && showDetails ? "show" : ""
+              }`}
+            >
+              {loadingDetails[job.id] ? (
+                <p>Loading...</p>
+              ) : (
+                <>
+                  <h4>Job Details</h4>
+                  <p>
+                    Description: {cleanHTML(jobDetails[job.id]?.description)}
+                  </p>
+                  {jobDetails[job.id]?.salary && (
                     <p>
-                      Description: {cleanHTML(jobDetails[job.id]?.description)}
+                      Salary: ${jobDetails[job.id].salary.min} - $
+                      {jobDetails[job.id].salary.max}{" "}
+                      {jobDetails[job.id].salary.type}
                     </p>
-                    {jobDetails[job.id]?.salary && (
-                      <p>
-                        Salary: ${jobDetails[job.id].salary.min} - $
-                        {jobDetails[job.id].salary.max}{" "}
-                        {jobDetails[job.id].salary.type}
-                      </p>
-                    )}
-                    <p>
-                      Posted on:{" "}
-                      {new Date(
-                        jobDetails[job.id]?.pub_date_ts_milli
-                      ).toLocaleDateString()}
-                    </p>
-                    <button onClick={() => setShowDetails(false)}>
-                      Hide Details
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
+                  )}
+                  <p>
+                    Posted on:{" "}
+                    {new Date(
+                      jobDetails[job.id]?.pub_date_ts_milli
+                    ).toLocaleDateString()}
+                  </p>
+                  <button onClick={handleHideDetails}>Hide Details</button>
+                </>
+              )}
+            </div>
           </li>
         ))}
       </ul>
