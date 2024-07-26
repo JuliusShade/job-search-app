@@ -1,17 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { fetchJobDetails } from "../api/indeedApi";
+import { fetchJobDetails, fetchJobPostings } from "../api/indeedApi";
 import { cleanHTML } from "../utils/cleanHTML";
 import "./JobList.css";
 
-const JobList = ({ jobs = [] }) => {
+const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
+  const [jobs, setJobs] = useState(initialJobs);
   const [selectedJob, setSelectedJob] = useState(null);
   const [jobDetails, setJobDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [nextPageId, setNextPageId] = useState(null);
 
   // Count job postings by employer
+  const countJobPostingsByEmployer = (jobs) => {
+    const counts = {};
+    jobs.forEach((job) => {
+      counts[job.company_name] = (counts[job.company_name] || 0) + 1;
+    });
+    return counts;
+  };
+
   const jobCounts = countJobPostingsByEmployer(jobs);
+
   // Sort jobs by employer count
+  const sortJobsByEmployerCount = (jobs, counts) => {
+    return jobs.sort((a, b) => counts[b.company_name] - counts[a.company_name]);
+  };
+
   const sortedJobs = sortJobsByEmployerCount(jobs, jobCounts);
 
   const handleViewDetails = async (jobId) => {
@@ -25,7 +40,7 @@ const JobList = ({ jobs = [] }) => {
 
     if (!jobDetails[jobId]) {
       try {
-        const details = await fetchJobDetails(jobId);
+        const details = await fetchJobDetails(jobId, useMock);
         setJobDetails((prevDetails) => ({
           ...prevDetails,
           [jobId]: details,
@@ -36,6 +51,42 @@ const JobList = ({ jobs = [] }) => {
     }
 
     setShowDetails(true);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        const response = await fetchJobPostings({ ...searchParams, useMock });
+        setJobs(response.hits);
+        setNextPageId(response.next_page_id);
+      } catch (error) {
+        console.error("Error fetching job postings:", error);
+      }
+      setLoading(false);
+    };
+
+    if (searchParams.query && searchParams.location && searchParams.radius) {
+      fetchJobs();
+    }
+  }, [searchParams, useMock]);
+
+  const handleLoadMore = async () => {
+    if (!nextPageId) return;
+
+    setLoading(true);
+    try {
+      const response = await fetchJobPostings({ page: nextPageId, useMock });
+      setJobs((prevJobs) => {
+        const updatedJobs = [...prevJobs, ...response.hits];
+        const updatedJobCounts = countJobPostingsByEmployer(updatedJobs);
+        return sortJobsByEmployerCount(updatedJobs, updatedJobCounts);
+      });
+      setNextPageId(response.next_page_id); // Update nextPageId for subsequent calls
+    } catch (error) {
+      console.error("Error loading more jobs:", error);
+    }
     setLoading(false);
   };
 
@@ -87,22 +138,21 @@ const JobList = ({ jobs = [] }) => {
           </li>
         ))}
       </ul>
+      {nextPageId && (
+        <div className="load-more-container">
+          {loading ? (
+            <div className="loading-spinner">
+              <div className="spinner"></div>
+            </div>
+          ) : (
+            <button className="load-more-button" onClick={handleLoadMore}>
+              Load More
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
-};
-
-const countJobPostingsByEmployer = (jobs) => {
-  const counts = {};
-
-  jobs.forEach((job) => {
-    counts[job.company_name] = (counts[job.company_name] || 0) + 1;
-  });
-
-  return counts;
-};
-
-const sortJobsByEmployerCount = (jobs, counts) => {
-  return jobs.sort((a, b) => counts[b.company_name] - counts[a.company_name]);
 };
 
 export default JobList;

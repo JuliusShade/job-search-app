@@ -48,7 +48,7 @@ const SearchForm = ({ onSearch }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="search-form">
       <div>
         <label htmlFor="query">Job Title:</label>
         <input

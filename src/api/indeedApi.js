@@ -1,12 +1,15 @@
 import axios from "axios";
 import { mockJobPostings, mockJobDetails } from "./mockData";
 
-const useMockData = false; // Toggle this to switch between mock data and real API
-
-console.log("API Key:", process.env.REACT_APP_RAPIDAPI_KEY); // Print the API key
-
-export const fetchJobPostings = async (query, location, radius) => {
-  if (useMockData) {
+// Function to fetch job postings with pagination support
+export const fetchJobPostings = async ({
+  page = 1,
+  query,
+  location,
+  radius,
+  useMock = false,
+}) => {
+  if (useMock) {
     return mockJobPostings;
   }
 
@@ -14,12 +17,12 @@ export const fetchJobPostings = async (query, location, radius) => {
     method: "GET",
     url: "https://indeed12.p.rapidapi.com/jobs/search",
     params: {
-      query: query,
-      location: location,
-      page_id: "1",
+      query: query || "manager",
+      location: location || "chicago",
+      page_id: page.toString(),
       locality: "us",
       fromage: "1",
-      radius: radius,
+      radius: radius || "50",
       sort: "date",
     },
     headers: {
@@ -33,12 +36,13 @@ export const fetchJobPostings = async (query, location, radius) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching job postings:", error);
-    throw new Error("Could not fetch job postings");
+    throw error;
   }
 };
 
-export const fetchJobDetails = async (jobId) => {
-  if (useMockData) {
+// Function to fetch job details
+export const fetchJobDetails = async (jobId, useMock = false) => {
+  if (useMock) {
     return mockJobDetails;
   }
 
@@ -57,6 +61,6 @@ export const fetchJobDetails = async (jobId) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching job details:", error);
-    throw new Error("Could not fetch job details");
+    throw error;
   }
 };
