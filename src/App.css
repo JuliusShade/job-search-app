@@ -1,3 +1,4 @@
+/* App.css */
 .App {
   text-align: center;
 }
@@ -15,6 +16,7 @@
 
 form {
   margin-bottom: 20px;
+  color: #282c34; /* Set the font color to dark */
 }
 
 form div {
@@ -24,6 +26,12 @@ form div {
 button {
   padding: 10px 20px;
   font-size: 16px;
+  color: #282c34; /* Set the font color to dark */
+  background-color: #fff; /* Ensure the button background is visible */
+}
+
+label {
+  color: #f9f9f9;
 }
 
 ul {
@@ -37,4 +45,18 @@ li {
   padding: 20px;
   border-radius: 5px;
   text-align: left;
+  color: #282c34; /* Set the font color to dark */
+}
+
+h3,
+p,
+a {
+  color: #282c34; /* Set the font color to dark */
+}
+
+.job-details {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
 }

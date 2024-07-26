@@ -1,25 +1,20 @@
 import React, { useState } from "react";
-import axios from "axios";
 import SearchForm from "./components/SearchForm";
 import JobList from "./components/JobList";
+import { fetchJobPostings } from "./api/indeedApi";
 import "./App.css";
 
 const App = () => {
   const [jobs, setJobs] = useState([]);
 
-  const handleSearch = async (location, radius) => {
+  const handleSearch = async (query, location, radius) => {
+    console.log("handleSearch called with:", { query, location, radius });
     try {
-      const response = await axios.get(
-        `https://api.indeed.com/v2/jobs/search?location=${location}&radius=${radius}&sort_by=date&limit=10`,
-        {
-          headers: {
-            Authorization: "Bearer YOUR_INDEED_API_KEY",
-          },
-        }
-      );
-      setJobs(response.data.jobs);
+      const jobData = await fetchJobPostings(query, location, radius);
+      console.log("API response:", jobData);
+      setJobs(jobData.hits); // Adjust this line according to the actual structure of your API response
     } catch (error) {
-      console.error("Error fetching job data:", error);
+      console.error("Error during job search:", error);
     }
   };
 
