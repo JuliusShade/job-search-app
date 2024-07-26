@@ -1,0 +1,98 @@
+.job-listings {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.job-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 10px 0;
+  padding: 15px;
+  width: 100%; /* Ensure it takes up the full width */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.job-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.job-title {
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: bold;
+}
+
+.job-company {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 8px;
+}
+
+.job-location {
+  font-size: 0.8em;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.job-time {
+  font-size: 0.75em;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.job-count {
+  font-size: 0.75em;
+  color: #999;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.job-details {
+  margin-top: 12px;
+  background: #f9f9f9;
+  border-top: 1px solid #eee;
+  padding: 8px;
+  border-radius: 0 0 8px 8px;
+}
+
+.job-details h4 {
+  margin: 0;
+  font-size: 1em;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.job-details p {
+  font-size: 0.8em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.job-details button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.job-details button:hover {
+  background-color: #0056b3;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+}
