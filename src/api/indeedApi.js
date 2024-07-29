@@ -7,7 +7,7 @@ export const fetchJobPostings = async ({
   query,
   location,
   radius,
-  useMock = false,
+  useMock = true,
 }) => {
   if (useMock) {
     return mockJobPostings;

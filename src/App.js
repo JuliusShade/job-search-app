@@ -30,7 +30,6 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Job Search</h1>
         <SearchForm onSearch={handleSearch} />
         {loading ? (
           <Loading />

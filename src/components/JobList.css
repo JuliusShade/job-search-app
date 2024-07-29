@@ -57,6 +57,12 @@
   right: 15px;
 }
 
+@media (max-width: 1480px) {
+  .job-count {
+    right: 50px; /* Adjust this value to ensure content is visible */
+  }
+}
+
 .job-details {
   max-height: 0;
   overflow: hidden;
@@ -75,7 +81,7 @@
 }
 
 .job-details p {
-  font-size: 0.5em;
+  font-size: 0.8em;
   color: #666;
   margin-bottom: 8px;
 }
@@ -141,5 +147,57 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+button {
+  padding: 10px 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1em;
+}
+
+button:hover {
+  background-color: grey;
+}
+
+/* Add media queries for smaller screens */
+@media (max-width: 1550px) {
+  .job-listings {
+    padding-top: 40px; /* Adjust this value to ensure content is visible */
+  }
+}
+
+@media (max-width: 1400px) {
+  .job-listings {
+    padding-top: 40px; /* Adjust this value to ensure content is visible */
+  }
+}
+
+@media (max-width: 1000px) {
+  .job-listings {
+    padding-top: 90px; /* Adjust this value to ensure content is visible */
+  }
+}
+
+@media (max-width: 850px) {
+  .job-listings {
+    padding-top: 110px; /* Adjust this value to ensure content is visible */
+  }
+}
+
+@media (max-width: 700px) {
+  .job-listings {
+    padding-top: 150px; /* Adjust this value to ensure content is visible */
+  }
+}
+
+@media (max-width: 480px) {
+  .job-listings {
+    padding-top: 150px; /* Adjust this value to ensure content is visible */
   }
 }

@@ -101,7 +101,6 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
 
   return (
     <div>
-      <h2>Job Listings</h2>
       <ul className="job-listings">
         {sortedJobs.map((job, index) => (
           <li key={index} className="job-item">
@@ -125,7 +124,6 @@ const JobList = ({ jobs: initialJobs, searchParams, useMock = false }) => {
                 <p>Loading...</p>
               ) : (
                 <>
-                  <h4>Job Details</h4>
                   <p>
                     Description: {cleanHTML(jobDetails[job.id]?.description)}
                   </p>
